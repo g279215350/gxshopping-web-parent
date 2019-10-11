@@ -51,7 +51,25 @@
             this.logining = true;
             //NProgress.start();
             var loginParams = { username: this.ruleForm2.account, password: this.ruleForm2.checkPass };
-            requestLogin(loginParams).then(data => {
+
+            //登录
+            this.$gpl.post("/plat/login", loginParams).then(result=>{
+              _this.logining = false;
+
+              let {success, message, restObj} = result.data;
+              if (success) {
+                console.debug(result);
+                sessionStorage.setItem('user', JSON.stringify(restObj));
+                this.$router.push({ path: '/mainPage' });
+              } else {
+                _this.$message({
+                  message: message,
+                  type: 'error'
+                });
+              }
+            });
+
+            /*requestLogin(loginParams).then(data => {
               this.logining = false;
               //NProgress.done();
               let { msg, code, user } = data;
@@ -62,9 +80,9 @@
                 });
               } else {
                 sessionStorage.setItem('user', JSON.stringify(user));
-                this.$router.push({ path: '/table' });
+                this.$router.push({ path: '/mainPage' });
               }
-            });
+            });*/
           } else {
             console.log('error submit!!');
             return false;

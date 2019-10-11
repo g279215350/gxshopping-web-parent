@@ -10,9 +10,15 @@ import Vuex from 'vuex'
 //import NProgress from 'nprogress'
 //import 'nprogress/nprogress.css'
 import routes from './routes'
-import Mock from './mock'
-Mock.bootstrap();
 import 'font-awesome/css/font-awesome.min.css'
+//卸载mock
+// import Mock from './mock'
+// Mock.bootstrap();
+
+//配置全局axios
+import axios from 'axios'
+axios.defaults.baseURL = "http://localhost:8100/services" //网关
+Vue.prototype.$gpl = axios; //将配置好的axios赋值给$gpl，名字自定，以后调用axios可直接使用$gpl来代替
 
 Vue.use(ElementUI)
 Vue.use(VueRouter)

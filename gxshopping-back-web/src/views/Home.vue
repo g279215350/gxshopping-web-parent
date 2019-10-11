@@ -75,7 +75,7 @@
 	export default {
 		data() {
 			return {
-				sysName:'VUEADMIN',
+				sysName:'共享购物',
 				collapsed:false,
 				sysUserName: '',
 				sysUserAvatar: '',
