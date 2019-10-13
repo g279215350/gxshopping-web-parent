@@ -5,12 +5,13 @@ import Main from './views/Main.vue'
 import Table from './views/nav1/Table.vue'
 import Form from './views/nav1/Form.vue'
 import user from './views/nav1/user.vue'
-import Brand from './views/product/Brand.vue'
-import Type from "./views/product/Type";
 import Module from "./views/product/Module";
 import Manager from "./views/product/Manager";
 import Specification from "./views/product/Specification";
 import Echarts from './views/charts/echarts.vue'
+
+import Brand from './views/product/Brand.vue'
+import ProductType from "./views/product/ProductType";
 
 let routes = [
     {
@@ -43,7 +44,7 @@ let routes = [
         iconCls: 'fa fa-id-card-o',
         children: [
             { path: '/brand', component: Brand, name: '商品品牌' },
-            { path: '/type', component: Type, name: '商品类型' },
+            { path: '/productType', component: ProductType, name: '商品类型' },
             { path: '/module', component: Module, name: '商品模板' },
             { path: '/specification', component: Specification, name: '商品规格' },
             { path: '/manager', component: Manager, name: '商品管理' }

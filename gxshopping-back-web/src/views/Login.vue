@@ -24,7 +24,7 @@
         logining: false,
         ruleForm2: {
           account: 'admin',
-          checkPass: '123456'
+          checkPass: 'admin'
         },
         rules2: {
           account: [
@@ -58,7 +58,6 @@
 
               let {success, message, restObj} = result.data;
               if (success) {
-                console.debug(result);
                 sessionStorage.setItem('user', JSON.stringify(restObj));
                 this.$router.push({ path: '/mainPage' });
               } else {
