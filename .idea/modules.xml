@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/ecommerce/ecommerce.iml" filepath="$PROJECT_DIR$/ecommerce/ecommerce.iml" />
       <module fileurl="file://$PROJECT_DIR$/gxshopping-back-web/gxshopping-back-web.iml" filepath="$PROJECT_DIR$/gxshopping-back-web/gxshopping-back-web.iml" />
       <module fileurl="file://$PROJECT_DIR$/gxshopping-web-parent.iml" filepath="$PROJECT_DIR$/gxshopping-web-parent.iml" />
     </modules>
