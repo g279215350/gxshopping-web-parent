@@ -28,7 +28,9 @@
             <el-table-column prop="firstLetter" label="首字母" width="120" sortable>
             </el-table-column>
             <el-table-column prop="logo" label="商品商标" width="120" sortable>
-                <img src="scope.row.logo" style="height: 50px;"/>
+                <template scope="scope">
+                    <img :src="'http://172.16.4.177'+scope.row.logo" style="height: 50px;width: 50px;"/>
+                </template>
             </el-table-column>
             <el-table-column prop="productType.name" label="商品类型" width="180" sortable>
             </el-table-column>
@@ -60,11 +62,25 @@
                 </el-form-item>
                 <el-form-item label="品牌类型">
                     <el-cascader
+                            :clearable="true"
+                            change-on-select
+                            :show-all-levels="false"
                             expand-trigger="hover"
                             :options="options"
                             v-model="changeForm.selectedOptions"
                             :props="defaultProps">
                     </el-cascader>
+                </el-form-item>
+                <el-form-item label="logo">
+                    <el-upload
+                            class="avatar-uploader"
+                            action="http://localhost:8100/services/common/file"
+                            :show-file-list="false"
+                            :on-success="fileUploaded"
+                            :before-upload="beforeUpload">
+                        <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
                 </el-form-item>
                 <el-form-item label="品牌描述">
                     <el-input type="textarea" v-model="changeForm.description"></el-input>
@@ -78,6 +94,32 @@
     </section>
 </template>
 
+<style>
+    .avatar-uploader .el-upload {
+        border: 1px dashed #d9d9d9;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+    .avatar-uploader .el-upload:hover {
+        border-color: #20a0ff;
+    }
+    .avatar-uploader-icon {
+        font-size: 28px;
+        color: #8c939d;
+        width: 178px;
+        height: 178px;
+        line-height: 178px;
+        text-align: center;
+    }
+    .avatar {
+        width: 60px;
+        height: 60px;
+        display: block;
+    }
+</style>
+
 <script>
     import util from '../../common/js/util'
     //import NProgress from 'nprogress'
@@ -86,6 +128,7 @@
     export default {
         data() {
             return {
+                imageUrl: '',   //显示图片
                 options: [],    //级联下拉框数据
                 defaultProps: { //修改显示字段
                     value: 'id',
@@ -129,6 +172,45 @@
             }
         },
         methods: {
+            //文件上传之前的钩子
+            beforeUpload(file){
+                const isJPG = file.type.split("/")[0] == "image";
+                const isLt1M = file.size / 1024 / 1024 < 1;
+
+                if (!isJPG) {
+                    this.$message.error('只能上传图片!');
+                }
+                if (!isLt1M) {
+                    this.$message.error('上传logo图片大小不能超过 1MB!');
+                }
+                return isJPG && isLt1M;
+            },
+            //文件上传成功后的钩子
+            fileUploaded(response, file, fileList){
+                // console.debug("response",response);
+                // console.debug("file",file);
+                // console.debug("fileList",fileList);
+                if (this.changeForm.logo !=  null) {
+                    if (this.changeForm.logo != response.restObj){
+                        //原来图片与现在图片不一致，表示修改logo，删除原本图片，上传现在图片
+                        this.deletePicture(this.changeForm.logo);
+                    }
+                }
+                this.changeForm.logo = response.restObj;
+                this.imageUrl = "http://172.16.4.177" + response.restObj;
+            },
+            //删除服务器图片
+            deletePicture(path){
+                this.$gpl.delete("/common/file?fileId="+path).then(result=>{
+                    let {success, message} = result.data;
+                    if (!success) {
+                        this.$message({
+                            message: message,
+                            type: "error"
+                        });
+                    }
+                });
+            },
             // 递归判断列表，把最后的children设为undefined
             getTreeData(data){
                 for(var i = 0;i<data.length;i++){
@@ -186,6 +268,7 @@
                                 type: "success"
                             });
                             this.getBrands();
+                            this.deletePicture(row.logo);
                         }
                     });
                 }).catch(() => {
@@ -204,6 +287,7 @@
                 for (let i = 0; i < a.length; i++) {
                     a[i] = parseInt(a[i]);
                 }
+                this.imageUrl = "http://172.16.4.177" + row.logo;
                 this.changeForm.selectedOptions = a;
                 this.getCascader();
             },
@@ -211,12 +295,12 @@
             handleAdd: function () {
                 this.addFormVisible = true;
                 this.changeForm= {};
+                this.imageUrl = '';
                 this.getCascader();
             },
             //新增和编辑
             addSubmit: function () {
-                // console.debug(this.changeForm);
-                this.$refs.addForm.validate((valid) => {
+                this.$refs.changeForm.validate((valid) => {
                     if (valid) {
                         this.$confirm('确认提交吗？', '提示', {}).then(() => {
                             this.addLoading = true;
@@ -225,7 +309,6 @@
                                 this.changeForm.selectedOptions[this.changeForm.selectedOptions.length-1];
                             // this.changeForm.id = '';
                             let para = Object.assign({}, this.changeForm);
-
                             // 传数据到后台
                             this.$gpl.post("/product/brand/add", para).then(result=>{
                                 if (result.data.success) {
@@ -267,6 +350,9 @@
                                 type: "success"
                             });
                             this.getBrands();
+                            for(let i = 0; i < this.sels.length; i++) {
+                                this.deletePicture(this.sels[i].logo);
+                            }
                         }
                     });
                 }).catch(() => {
