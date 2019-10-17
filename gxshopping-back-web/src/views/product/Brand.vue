@@ -21,20 +21,20 @@
             </el-table-column>
             <el-table-column type="index" width="60">
             </el-table-column>
-            <el-table-column prop="name" label="商品名称" width="120" sortable>
+            <el-table-column prop="name" label="品牌名称" width="120" sortable>
             </el-table-column>
             <el-table-column prop="englishName" label="英语名称" width="120" sortable>
             </el-table-column>
             <el-table-column prop="firstLetter" label="首字母" width="120" sortable>
             </el-table-column>
-            <el-table-column prop="logo" label="商品商标" width="120" sortable>
+            <el-table-column prop="logo" label="品牌商标" width="120" sortable>
                 <template scope="scope">
                     <img :src="'http://172.16.4.177'+scope.row.logo" style="height: 50px;width: 50px;"/>
                 </template>
             </el-table-column>
-            <el-table-column prop="productType.name" label="商品类型" width="180" sortable>
+            <el-table-column prop="productType.name" label="品牌类型" width="180" sortable>
             </el-table-column>
-            <el-table-column prop="description" label="商品描述" min-width="120" sortable>
+            <el-table-column prop="description" label="品牌描述" min-width="120" sortable>
             </el-table-column>
             <el-table-column label="操作" width="150">
                 <template scope="scope">

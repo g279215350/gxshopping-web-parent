@@ -20,9 +20,18 @@ import axios from 'axios'
 axios.defaults.baseURL = "http://localhost:8100/services" //网关
 Vue.prototype.$gpl = axios; //将配置好的axios赋值给$gpl，名字自定，以后调用axios可直接使用$gpl来代替
 
+
 Vue.use(ElementUI)
 Vue.use(VueRouter)
 Vue.use(Vuex)
+
+//引入富文本编辑器
+import VueQuillEditor  from 'vue-quill-editor'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+
+Vue.use(VueQuillEditor);
 
 //NProgress.configure({ showSpinner: false });
 
