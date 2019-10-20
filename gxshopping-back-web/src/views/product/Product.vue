@@ -158,8 +158,13 @@
             <div>
             <!--//sku动态table的展示-->
                 <el-table :data="skus" highlight-current-row style="width: 100%;">
-                    <el-table-column v-for="(value,key) in skus[0]" :label="key"
-                                     :prop="key">
+                    <el-table-column v-if="key!='indexes'&&key!='marketPrice'&&key!='availableStock'" v-for="(value,key) in skus[0]" :label="key" :prop="key">
+                    </el-table-column>
+
+                    <el-table-column v-if="key!='indexes'&&key=='marketPrice'||key=='availableStock'" v-for="(value,key) in skus[0]" :label="key" :prop="key">
+                        <template scope="scope">
+                            <el-input v-model="scope.row[key]" ></el-input>
+                        </template>
                     </el-table-column>
                 </el-table>
             </div>
@@ -281,18 +286,56 @@
                 } else {
                     let productId = this.sels[0].id;
                     this.$gpl.get("/product/product/getSkuProperties?productId="+productId).then(result=>{
-                        this.skuProperties = result.data;
+                        // console.debug(result);
+                        this.skuProperties = result.data.skuProperties;
+                        this.skus = result.data.skus;
                         this.skuPropertiesVisible = true;
                     });
                 }
             },
             //Sku属性列删除
             deleteProperty(i1, i2){
-                this.skuProperties[i1].options.splice(i2,1);
+                // //删除某天数据后
+                // let count = 1;
+                // for (let i = 1; i < this.skuProperties.length-1; i++) {
+                //     count = count * this.skuProperties.length;
+                // }
+                console.debug(this.skus);
+                console.debug(this.skuProperties[i1]);
+                //删除的是那一列
+                let specName = this.skuProperties[i1].specName;
+                // console.debug(this.skuProperties[this.skuProperties.length-1].options.length);
+                let ts = this.skuProperties[i1].options.splice(i2,1);
+                //删除的是这列的那一个数据：
+                console.debug(ts);
+
+                // this.skus
             },
             //Sku属性维护提交
             changeSkuProperties(){
-                //
+                //将SkuProperties数组和skus数组封装传给后端
+                this.changeLoading = true;
+                let productId = this.sels[0].id;
+                let param = {};
+                param.skuProperties = this.skuProperties;
+                param.skus = this.skus;
+                console.debug(param);
+                this.$gpl.post("/product/product/changeSkuProperties?productId="+productId,param)
+                    .then(result=>{
+                        if (result.data.success){
+                            this.$message({
+                                message: "显示属性修改成功！",
+                                type: "success"
+                            });
+                            this.changeLoading = false;
+                            this.skuPropertiesVisible = false;
+                        } else {
+                            this.$message({
+                                message: result.data.message,
+                                type: "error"
+                            });
+                        }
+                    })
             },
             //上架
             handleOnSale(){},
@@ -375,7 +418,7 @@
                     }
                 });
             },
-            // 递归判断列表，把最后的children设为undefined
+            //递归判断列表，把最后的children设为undefined
             getTreeData(data){
                 for(var i = 0;i<data.length;i++){
                     if(data[i].children.length<1){
@@ -474,15 +517,11 @@
                 this.changeForm.selectedOptions = a;
                 this.getExt(row.id);
                 this.templatePics = row.medias.split(",");
-                console.debug(this.templatePics)
                 for (let i = 0; i < this.templatePics.length; i++) {
                     let pic = {url: ''};
                     pic.url = "http://172.16.4.177" + this.templatePics[i];
                     this.showFileList.push(pic);
                 }
-                console.debug("fileList",this.showFileList);
-                // this.showFileList
-                // console.debug("changeForm",this.changeForm);
                 this.getCascader();
                 this.getBrands();
             },
@@ -582,18 +621,40 @@
                 handler(val, oldVal) {
                     //过滤掉options为空的sku属性
                     let skuPropertiesArray = this.skuProperties.filter(e=>e.options.length>0);
+                    let x = 0;
                     let result = skuPropertiesArray.reduce((pre,cur,index)=>{
                         let temp = [];
                         pre.forEach(e1=>{
-                            cur.options.forEach(e2=>{
+                            cur.options.forEach((e2,index2)=>{
                                 let obj = Object.assign({},e1);
                                 obj[cur.specName] = e2;
 
+                                let finalIndexes = obj.indexes;
+                                if (!finalIndexes) finalIndexes = '';
+
                                 //判断是否是最后一次
                                 if (index == skuPropertiesArray.length - 1) {
-                                    obj.price = 0;
-                                    obj.store = 0;
+                                    // console.debug(x,this.skus[x]);
+                                    // console.debug(this.skus);
+                                    if (x<this.skus.length) {
+                                        obj.marketPrice = this.skus[x].marketPrice;
+                                        obj.availableStock = this.skus[x].availableStock;
+                                        if (obj.marketPrice == null) {
+                                            obj.marketPrice = 0;
+                                        }
+                                        if (obj.availableStock == null) {
+                                            obj.availableStock = 0;
+                                        }
+                                        x++;
+                                    } else {
+                                        obj.marketPrice = 0;
+                                        obj.availableStock = 0;
+                                    }
+                                    finalIndexes += index2;
+                                } else {
+                                    finalIndexes += index2 + ".";
                                 }
+                                obj.indexes = finalIndexes;
                                 temp.push(obj);
                             })
                         });
