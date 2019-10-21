@@ -2,7 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="547e90f8-6e02-4a6c-8ffc-2490f1b3ffb5" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/ecommerce/static/vue/vue.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ecommerce/static/vue/vue.min.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce/home.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce/list.html" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce/list.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gxshopping-back-web/src/views/product/Product.vue" beforeDir="false" afterPath="$PROJECT_DIR$/gxshopping-back-web/src/views/product/Product.vue" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -53,7 +57,7 @@
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/gxshopping-back-web/src/views/product" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/ecommerce/static/vue" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
@@ -65,6 +69,7 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\java\IdeaProjects\gxshopping-web-parent\ecommerce\static\vue" />
       <recent name="D:\java\IdeaProjects\gxshopping-web-parent\gxshopping-back-web\src\views\product" />
     </key>
   </component>
@@ -105,7 +110,10 @@
       <workItem from="1571330710427" duration="1474000" />
       <workItem from="1571358364341" duration="6438000" />
       <workItem from="1571454036786" duration="14583000" />
-      <workItem from="1571536944891" duration="14557000" />
+      <workItem from="1571536944891" duration="14641000" />
+      <workItem from="1571574291940" duration="763000" />
+      <workItem from="1571644197806" duration="646000" />
+      <workItem from="1571651263690" duration="7803000" />
     </task>
     <task id="LOCAL-00001" summary="前后端联调，登录">
       <created>1570802772375</created>
@@ -149,7 +157,14 @@
       <option name="project" value="LOCAL" />
       <updated>1571473311937</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Sku属性更新">
+      <created>1571574141264</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1571574141264</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -176,6 +191,7 @@
     <MESSAGE value="分布式文件管理" />
     <MESSAGE value="商品模块CRUD" />
     <MESSAGE value="显示属性显示和修改和Sku属性显示" />
-    <option name="LAST_COMMIT_MESSAGE" value="显示属性显示和修改和Sku属性显示" />
+    <MESSAGE value="Sku属性更新" />
+    <option name="LAST_COMMIT_MESSAGE" value="Sku属性更新" />
   </component>
 </project>

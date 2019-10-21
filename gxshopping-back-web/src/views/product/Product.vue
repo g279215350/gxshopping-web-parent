@@ -28,7 +28,7 @@
         </el-col>
 
         <!--列表-->
-        <el-table :data="products" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
+        <el-table :data="products" highlight-current-row v-loading="listLoading" @select="selChange" @selection-change="selsChange" style="width: 100%;">
             <el-table-column type="selection" width="55">
             </el-table-column>
             <el-table-column type="index" label="序号" width="80">
@@ -54,8 +54,8 @@
             </el-table-column>
             <el-table-column label="操作" width="150">
                 <template scope="scope">
-                    <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                    <el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+                    <el-button v-if="scope.row.state!=1" size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                    <el-button v-if="scope.row.state!=1" type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -184,6 +184,7 @@
     export default {
         data() {
             return {
+                isShow: false,
                 //显示属性维护模态窗
                 viewPropertiesVisible: false,
                 viewProperties: [], //显示属性数据
@@ -256,6 +257,13 @@
             },
             //显示属性维护提交
             changeViewProperties(){
+                if (this.sels[0].state == 1) {
+                    this.$message({
+                        message: "修改显示属性之前请将该商品下架！",
+                        type: "error"
+                    });
+                    return;
+                }
                 this.changeLoading = true;
                 let productId = this.sels[0].id;
                 this.$gpl.post("/product/product/changeViewProperties?productId="+productId,this.viewProperties)
@@ -313,6 +321,13 @@
             },
             //Sku属性维护提交
             changeSkuProperties(){
+                if (this.sels[0].state == 1) {
+                    this.$message({
+                        message: "修改Sku属性之前请将该商品下架！",
+                        type: "error"
+                    });
+                    return;
+                }
                 //将SkuProperties数组和skus数组封装传给后端
                 this.changeLoading = true;
                 let productId = this.sels[0].id;
@@ -335,16 +350,74 @@
                                 type: "error"
                             });
                         }
-                    })
+                    });
             },
             //上架
-            handleOnSale(){},
+            handleOnSale(){
+                var ids = this.sels.map(item => item.id).toString();
+                this.$confirm('确认上架选中记录吗？', '提示', {
+                    type: 'warning'
+                }).then(() => {
+                    this.listLoading = true;
+
+                    //批量上传
+                    this.$gpl.get("/product/product/onSale?ids=" + ids).then(result=>{
+                        this.listLoading = false;
+                        if (result.data.success) {
+                            this.$message({
+                                message: "上架成功！",
+                                type: "success"
+                            });
+                            this.getProducts();
+                        } else {
+                            this.$message({
+                                message: result.data.message,
+                                type: "error"
+                            });
+                        }
+                    });
+                }).catch(() => {
+                    this.$message({
+                        message: "服务器繁忙，请稍后在试。",
+                        type: "warning"
+                    });
+                });
+            },
             //格式化上架时间
             onSaleTimeFm(row, column){
                 return this.timeFormatter(row.onSaleTime);
             },
             //下架
-            handleOffSale(){},
+            handleOffSale(){
+                var ids = this.sels.map(item => item.id).toString();
+                this.$confirm('确认上架选中记录吗？', '提示', {
+                    type: 'warning'
+                }).then(() => {
+                    this.listLoading = true;
+
+                    //批量上传
+                    this.$gpl.get("/product/product/offSale?ids=" + ids).then(result=>{
+                        this.listLoading = false;
+                        if (result.data.success) {
+                            this.$message({
+                                message: "下架成功！",
+                                type: "success"
+                            });
+                            this.getProducts();
+                        } else {
+                            this.$message({
+                                message: result.data.message,
+                                type: "error"
+                            });
+                        }
+                    });
+                }).catch(() => {
+                    this.$message({
+                        message: "服务器繁忙，请稍后在试。",
+                        type: "warning"
+                    });
+                });
+            },
             //格式化下架时间
             offSaleTimeFm(row, column){
                 return this.timeFormatter(row.offSaleTime);
@@ -479,6 +552,13 @@
             },
             //删除
             handleDel: function (index, row) {
+                if (row.state == 1) {
+                    this.$message({
+                        message: "删除商品之前请将该商品下架！",
+                        type: "error"
+                    });
+                    return;
+                }
                 this.$confirm('确认删除该记录吗?', '提示', {
                     type: 'warning'
                 }).then(() => {
@@ -505,6 +585,13 @@
             },
             //显示编辑界面
             handleEdit: function (index, row) {
+                if (row.state == 1) {
+                    this.$message({
+                        message: "修改商品之前请将该商品下架！",
+                        type: "error"
+                    });
+                    return;
+                }
                 this.showFileList = [];
                 var a = row.productType.path.split('.');
                 this.changeFormVisible = true;
@@ -584,8 +671,22 @@
             selsChange: function (sels) {
                 this.sels = sels;
             },
+            selChange(selection, row){
+                if (row.state == 1) {
+                    this.isShow = false;
+                }
+            },
             //批量删除
             batchRemove: function () {
+                for (let i = 0; i < this.sels.length; i++) {
+                    if (this.sels[i].state == 1) {
+                        this.$message({
+                            message: "批量删除商品中有未下架商品，请移除后再删除！",
+                            type: "error"
+                        });
+                        return;
+                    }
+                }
                 var ids = this.sels.map(item => item.id).toString();
                 this.$confirm('确认删除选中记录吗？', '提示', {
                     type: 'warning'
